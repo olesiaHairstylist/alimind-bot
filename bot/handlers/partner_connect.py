@@ -45,28 +45,24 @@ async def cmd_partner_connect(message: Message) -> None:
 
     if len(parts) < 2:
         await message.answer(
-            "Использование:\n"
-            "/partner_connect <CARD_ID>\n\n"
-            "Пример:\n"
-            "/partner_connect TRN_SERKAN",
+            "Пришлите CARD_ID. Пример: TRN_SERKAN",
             parse_mode=None,
         )
         return
 
     card_id = parts[1].strip().strip('"').strip("'")
     if not card_id:
-        await message.answer("❌ Некорректный CARD_ID.", parse_mode=None)
+        await message.answer("Пришлите CARD_ID. Пример: TRN_SERKAN", parse_mode=None)
         return
 
     obj = registry.get(card_id)
     if not isinstance(obj, dict):
-        await message.answer(f"❌ Карточка не найдена: {card_id}", parse_mode=None)
+        await message.answer("⚠️ Карточка не найдена.", parse_mode=None)
         return
 
     if not _is_partner_obj(obj):
         await message.answer(
-            "❌ Эта карточка не помечена как партнёр.\n"
-            "Если вы партнёр — попросите администратора включить статус partner.",
+            "⚠️ Это не партнёрская карточка.",
             parse_mode=None,
         )
         return
@@ -77,15 +73,10 @@ async def cmd_partner_connect(message: Message) -> None:
     try:
         set_link(card_id=card_id, chat_id=chat_id, username=username)
     except Exception as e:
-        await message.answer(f"❌ Не удалось подключить партнёра: {e}", parse_mode=None)
+        await message.answer(f"⚠️ Не удалось подключить партнёра: {e}", parse_mode=None)
         return
 
-    name = to_text(obj.get("name")).strip() or card_id
-
     await message.answer(
-        "✅ Партнёр подключён.\n\n"
-        f"Карточка: {name}\n"
-        f"ID: {card_id}\n\n"
-        "Теперь вы будете получать запросы от клиентов через AliMind Directory.",
+        "✅ Партнёр подключён. Заявки будут приходить в этот чат.",
         parse_mode=None,
     )
