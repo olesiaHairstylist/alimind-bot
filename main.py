@@ -23,6 +23,7 @@ from bot.handlers.migr_001_static import router as migr_001_static_router
 from bot.handlers.on_duty_pharmacies import router as on_duty_pharmacies_router
 from bot.handlers.partner_connect import router as partner_connect_router
 from bot.handlers.partner_request import router as partner_request_router
+from bot.handlers.request_audit import router as request_audit_router
 from bot.handlers.fallback import router as fallback_router
 from dotenv import load_dotenv
 load_dotenv()
@@ -86,6 +87,7 @@ async def main() -> None:
     dp.include_router(partner_connect_router)
     dp.include_router(partner_request_router)
     dp.include_router(emergency_contacts_router)  # ДО fallback
+    dp.include_router(request_audit_router)
 
     dp.include_router(migr_001_static_router)
     dp.include_router(planned_outages_router)  # ДО fallback
