@@ -1,0 +1,9 @@
+{
+  "id": "BEAUTY_09",
+  "category": "beauty",
+  "name": "Маникюр — здесь может быть ваша карточка",
+  "description": "Вы мастер маникюра в Аланье?\nНапишите — расскажем условия размещения.",
+  "telegram": "@alimind_contact",
+  "languages": ["RU", "TR"],
+  "status": "standard"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "MED_06",
+  "category": "med",
+  "name": "Med объект 06",
+  "type": "Медицина / аптека",
+  "status": "standard",
+  "address": "Alanya",
+  "google_maps": "https://maps.google.com/?q=Alanya",
+  "phone": "+90 242 000 00 00",
+  "whatsapp": "",
+  "languages": [
+    "TR"
+  ],
+  "description": "Медицина / аптека в Аланье. Тестовый объект 06 для AliMind Directory.",
+  "working_hours": "Пн–Пт 09:00–18:00"
+}

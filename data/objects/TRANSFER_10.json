@@ -1,0 +1,16 @@
+{
+  "id": "TRANSFER_10",
+  "category": "transfer",
+  "name": "Transfer объект 10",
+  "type": "Трансфер / водитель",
+  "status": "standard",
+  "address": "Alanya",
+  "google_maps": "https://maps.google.com/?q=Alanya",
+  "phone": "+90 242 000 00 00",
+  "whatsapp": "",
+  "languages": [
+    "TR"
+  ],
+  "description": "Трансфер / водитель в Аланье. Тестовый объект 10 для AliMind Directory.",
+  "working_hours": "Пн–Пт 09:00–18:00"
+}

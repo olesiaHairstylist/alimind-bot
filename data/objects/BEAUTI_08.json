@@ -1,0 +1,9 @@
+{
+  "id": "BEAUTY_10",
+  "category": "beauty",
+  "name": "Педикюр — здесь может быть ваша карточка",
+  "description": "Вы мастер педикюра в Аланье?\nНапишите — расскажем условия.",
+  "telegram": "@alimind_contact",
+  "languages": ["RU", "TR"],
+  "status": "standard"
+}

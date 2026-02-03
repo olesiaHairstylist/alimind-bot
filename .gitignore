@@ -1,0 +1,16 @@
+.env
+.idea/
+__pycache__/
+*.pyc
+*.log
+venv/
+.env.*
+# runtime/state
+data/state/*.jsonl
+data/state/partner_links.json
+
+# backups
+*.bak
+# runtime partner chats storage
+data/partner_chats.json
+data/partner_chats.json.tmp

@@ -1,0 +1,15 @@
+{
+  "id": "TRANSLATOR_01",
+  "category": "translator",
+  "name": "",
+  "type": "",
+  "status": "standard",
+  "address": "",
+  "google_maps": "",
+  "phone": "",
+  "whatsapp": "",
+  "languages": [
+    "TR"
+  ],
+  "description": ""
+}

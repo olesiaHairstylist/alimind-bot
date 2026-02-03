@@ -1,0 +1,16 @@
+{
+  "id": "MISC_01",
+  "category": "misc",
+  "name": "Misc объект 01",
+  "type": "Разное",
+  "status": "standard",
+  "address": "Alanya",
+  "google_maps": "https://maps.google.com/?q=Alanya",
+  "phone": "+90 242 000 00 00",
+  "whatsapp": "",
+  "languages": [
+    "TR"
+  ],
+  "description": "Разное в Аланье. Тестовый объект 01 для AliMind Directory.",
+  "working_hours": "Пн–Пт 09:00–18:00"
+}

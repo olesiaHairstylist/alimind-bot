@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+
+  "country": "TR",
+  "authority": "Göç İdaresi Başkanlığı",
+  "domain": "residence_permit",
+  "procedure": "family",
+  "doc_kind": "requirements_pdf",
+
+  "document_title": "Required Documents for Family Residence Permit",
+  "language": "tr",
+
+  "source_url": "https://www.goc.gov.tr/",
+  "official_section": "İkamet İzni / Aile İkamet İzni",
+
+  "date_published": null,
+  "date_downloaded": "2026-01-26",
+
+  "file": {
+    "filename": "requirements_family_2026-01-24.pdf",
+    "sha256": null
+  },
+
+  "integrity": {
+    "original": true,
+    "unchanged": true
+  },
+
+  "notes": "Official PDF used as primary source for AI analysis. No interpretation added."
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+
+  "country": "TR",
+  "region": "Antalya",
+  "city": "Alanya",
+  "domain": "residence_permit",
+  "doc_kind": "practice_notes",
+
+  "title": "Alanya — practice notes (open/closed areas for residence permit)",
+  "language": "ru",
+
+  "status": "non_official",
+  "source_type": "field_practice",
+  "authority": null,
+
+  "scope": {
+    "topic": "Open/closed areas for residence permit (Alanya)",
+    "permit_types": ["unspecified"],
+    "applies_to": "Primary submission constraints by address (practice-based)"
+  },
+
+  "content": {
+    "open_areas": [
+      "Center",
+      "Oba",
+      "Demirtaş",
+      "Okurcalar",
+      "Tosmur",
+      "Konaklı",
+      "Payallar",
+      "Gazipaşa"
+    ],
+    "notes": [
+      "This is not an official Göç İdaresi list.",
+      "Area status may change without prior notice.",
+      "Final decision depends on permit type and local migration office practice."
+    ]
+  },
+
+  "validation": {
+    "official_list_exists": false,
+    "requires_user_warning": true
+  },
+
+  "authorship": {
+    "provided_by": "project_owner",
+    "confidence": "practice_confirmed_by_owner"
+  },
+
+  "dates": {
+    "observed_as_of": "2026-01-26",
+    "recorded_at": "2026-01-26T00:00:00+03:00",
+    "updated_at": "2026-01-26T00:00:00+03:00"
+  },
+
+  "change_log": [
+    {
+      "at": "2026-01-26T00:00:00+03:00",
+      "by": "project_owner",
+      "change": "Initial list of open areas added (practice-based)."
+    }
+  ],
+
+  "disclaimer_ru": "Практическая информация (не официальный источник). В официальных документах Göç İdaresi единый список открытых/закрытых районов не опубликован. Статус может меняться; решение зависит от типа ВНЖ и практики миграционного управления."
+}

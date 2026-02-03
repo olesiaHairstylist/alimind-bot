@@ -1,0 +1,13 @@
+{
+  "id": "SPORT_AD",
+  "category": "sport",
+  "name": "Спорт — здесь может быть ваша карточка",
+  "type": "Спортивные услуги",
+  "status": "standard",
+  "address": "Alanya",
+  "languages": ["RU", "TR", "EN"],
+  "description": "Вы работаете в сфере спорта в Алании? Тренер, секция, индивидуальные занятия — подключайтесь к AliMind Directory и принимайте заявки через систему.",
+  "telegram": "https://t.me/alimind_contact",
+  "photo": "",
+  "is_ad": true
+}
