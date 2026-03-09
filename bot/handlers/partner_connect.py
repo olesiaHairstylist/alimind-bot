@@ -12,6 +12,7 @@
 # - parse_mode=None (инвариант для списков/ID; тут тоже без Markdown)
 
 from __future__ import annotations
+import os
 
 from aiogram import Router
 from aiogram.filters import Command
@@ -45,9 +46,13 @@ async def cmd_partner_connect(message: Message) -> None:
 
     if len(parts) < 2:
         await message.answer(
-            "Пришлите CARD_ID. Пример: TRN_SERKAN",
+            "Подключение партнёра делается одной строкой:\n"
+            "/partner_connect <CARD_ID>\n\n"
+            "Пример:\n"
+            "/partner_connect TRN_SERKAN",
             parse_mode=None,
         )
+
         return
 
     card_id = parts[1].strip().strip('"').strip("'")
@@ -80,3 +85,18 @@ async def cmd_partner_connect(message: Message) -> None:
         "✅ Партнёр подключён. Заявки будут приходить в этот чат.",
         parse_mode=None,
     )
+    admin_id = (os.getenv("ADMIN_CHAT_ID") or "").strip()
+    if admin_id:
+        try:
+            await message.bot.send_message(
+                chat_id=int(admin_id),
+                text=(
+                    "✅ Подключение партнёра\n"
+                    f"CARD_ID: {card_id}\n"
+                    f"chat_id: {chat_id}\n"
+                    f"username: @{username}" if username else f"username: —"
+                ),
+                parse_mode=None,
+            )
+        except Exception:
+            pass

@@ -25,7 +25,24 @@ from bot.handlers.partner_connect import router as partner_connect_router
 from bot.handlers.partner_request import router as partner_request_router
 from bot.handlers.request_audit import router as request_audit_router
 from bot.handlers.fallback import router as fallback_router
-from dotenv import load_dotenv
+
+from bot.handlers.admin_connect import router as admin_connect_router
+
+from bot.handlers.admin_status import router as admin_status_router
+from bot.handlers.admin_funnel import router as admin_funnel_router
+from bot.handlers.admin_help import router as admin_help_router
+from aiogram.types import BotCommand, BotCommandScopeDefault
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+from zoneinfo import ZoneInfo
+
+from bot.city_events.update import update_events_today
+from bot.handlers.city_events import router as city_events_router
+from bot.handlers.bizbot import router as bizbot_router
+from bot.handlers.partner_apply import router as partner_apply_router
+
+
+
 load_dotenv()
 
 
@@ -77,6 +94,7 @@ async def main() -> None:
     # ✅ TRACE: подключаем ДО polling
     dp.message.middleware(TraceMiddleware())
 
+
     # ===== REVISOR-GATE: WIRING (каждый router ровно 1 раз; fallback последний) =====
     dp.include_router(start_router)
     dp.include_router(menu_router)
@@ -86,18 +104,33 @@ async def main() -> None:
     dp.include_router(recents_router)
     dp.include_router(partner_connect_router)
     dp.include_router(partner_request_router)
-    dp.include_router(emergency_contacts_router)  # ДО fallback
+    dp.include_router(emergency_contacts_router)
     dp.include_router(request_audit_router)
 
     dp.include_router(migr_001_static_router)
-    dp.include_router(planned_outages_router)  # ДО fallback
-    dp.include_router(on_duty_pharmacies_router)  # ДО fallback
-    dp.include_router(fallback_router)  # ✅ строго последним
+    dp.include_router(planned_outages_router)
+    dp.include_router(on_duty_pharmacies_router)
+    dp.include_router(admin_connect_router)
+
+    dp.include_router(admin_status_router)
+    dp.include_router(admin_funnel_router)
+    dp.include_router(admin_help_router)
+    dp.include_router(city_events_router)
+    dp.include_router(bizbot_router)
+    dp.include_router(partner_apply_router)
+    dp.include_router(fallback_router)  # строго последним
 
     # ===== BOOT + SMOKE =====
     me = await bot.get_me()
     print(f"[ME] id={me.id} username=@{me.username}")
     print("[BOOT OK] main.py started")
+
+    await bot.set_my_commands(
+        [
+            BotCommand(command="admin_help", description="Админ-справка"),
+        ],
+        scope=BotCommandScopeDefault()
+    )
 
     preload_catalog()
     print(f"[CATALOG] path: {DATA_PATH}")
@@ -125,6 +158,15 @@ async def main() -> None:
 
     await bot.delete_webhook(drop_pending_updates=True)
     print("[WEBHOOK] deleted (drop_pending_updates=True)")
+    scheduler = AsyncIOScheduler(timezone=ZoneInfo("Europe/Istanbul"))
+
+    # каждый день, 06:05 утра (пример). Время выберите любое “тихое”.
+    scheduler.add_job(update_events_today, CronTrigger(hour=6, minute=5))
+
+    scheduler.start()
+
+    # сразу обновить при старте (без UI, просто заполнить файлы)
+    await update_events_today()
 
     # ✅ polling запускаем РОВНО 1 раз
     try:

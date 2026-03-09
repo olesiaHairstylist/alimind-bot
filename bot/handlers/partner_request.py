@@ -14,12 +14,14 @@
 
 from __future__ import annotations
 
+import html
 import re
 import uuid
+import os
 
 from aiogram import Router, F
-from aiogram.filters import StateFilter
 from aiogram.exceptions import TelegramForbiddenError, TelegramBadRequest
+from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message, InlineKeyboardMarkup
@@ -29,6 +31,8 @@ from bot.core.registry import registry
 from bot.core.text import to_text
 from bot.storage.partner_links import get_chat_id
 from bot.storage.request_audit import append_event
+from bot.storage.admin_chat import get_admin_chat_id
+
 
 router = Router()
 
@@ -55,6 +59,7 @@ def _kb_confirm() -> InlineKeyboardMarkup:
 def _kb_cancel() -> InlineKeyboardMarkup:
     b = InlineKeyboardBuilder()
     b.button(text="✖️ Отмена", callback_data=f"{CB_PREFIX}:cancel")
+
     return b.as_markup()
 
 
@@ -100,20 +105,51 @@ def _build_partner_message(
     user_id: int,
     question: str,
     contact: str,
+    user_username: str | None = None,
 ) -> str:
-    # category/user_name/user_id оставлены в сигнатуре "на будущее"
-    # (и чтобы аудит/форматы можно было расширять без ломки).
+    partner_name = html.escape(partner_name or "—")
+    card_id = html.escape(card_id or "—")
+    question = html.escape(question or "—")
+    contact = html.escape(contact or "—")
+
+    # username может отсутствовать — это нормально
+    uname = (user_username or "").strip()
+    uname_part = f" @{html.escape(uname)}" if uname else ""
+
+    # кликабельный клиент по user_id (работает всегда)
+    safe_user_name = html.escape(user_name or "Клиент")
+    client_link = f'<a href="tg://user?id={user_id}">{safe_user_name}</a>'
+
     return (
-        "📩 Новая заявка на запись\n\n"
-        f"👤 Партнёр: {partner_name}\n"
-        f"🆔 CARD_ID: {card_id}\n"
-        f"👤 Клиент: {user_name} (id:{user_id})\n\n"
-        f"✨ Запрос: {question}\n"
-        f"📞 Контакт: {contact}\n\n"
+        "📩 <b>Новая заявка на запись</b>\n\n"
+        f"👤 <b>Партнёр:</b> {partner_name}\n"
+        f"🆔 <b>CARD_ID:</b> {card_id}\n"
+        f"👤 <b>Клиент:</b> {client_link}{uname_part} (id:{user_id})\n\n"
+        f"✨ <b>Запрос:</b> {question}\n"
+        f"📞 <b>Контакт:</b> {contact}\n\n"
         "Напишите клиенту и подтвердите время 💬\n"
         "📍 Источник: AliMind Directory (партнёрский запрос)"
     )
 
+async def _notify_admin(bot, *, status: str, request_id: str, card_id: str, partner_chat_id: int | None, user_id: int) -> None:
+    admin_chat_id = get_admin_chat_id()
+    if not admin_chat_id:
+        return
+
+    # НИКАКОГО текста заявки и контакта
+    text = (
+        f"{'✅' if status == 'ok' else '❌'} PartnerRequest {status}\n"
+        f"request_id: {request_id}\n"
+        f"card_id: {card_id}\n"
+        f"partner_chat_id: {partner_chat_id if partner_chat_id is not None else '—'}\n"
+        f"user_id: {user_id}"
+    )
+
+    try:
+        await bot.send_message(chat_id=admin_chat_id, text=text, parse_mode=None)
+    except Exception:
+        # админ-уведомления не должны ломать основной поток
+        pass
 
 @router.callback_query(F.data.startswith(f"{CB_PREFIX}:"), F.data.regexp(CB_START_PATTERN))
 async def cb_start_partner_request(query: CallbackQuery, state: FSMContext) -> None:
@@ -155,7 +191,6 @@ async def cb_start_partner_request(query: CallbackQuery, state: FSMContext) -> N
         return
 
     partner_name = to_text(obj.get("name")).strip() or card_id
-
     request_id = uuid.uuid4().hex[:12]
 
     await state.clear()
@@ -315,6 +350,7 @@ async def cb_confirm(query: CallbackQuery, state: FSMContext) -> None:
     category = to_text(obj.get("category")).strip() or "—"
     user_name = (query.from_user.full_name or "").strip() or "—"
     user_id = query.from_user.id
+    user_username = query.from_user.username  # без @
 
     text_to_partner = _build_partner_message(
         card_id=card_id,
@@ -324,10 +360,16 @@ async def cb_confirm(query: CallbackQuery, state: FSMContext) -> None:
         user_id=user_id,
         question=question,
         contact=contact,
+        user_username=user_username,
     )
 
     try:
-        await query.bot.send_message(chat_id=partner_chat_id, text=text_to_partner, parse_mode=None)
+        await query.bot.send_message(
+            chat_id=partner_chat_id,
+            text=text_to_partner,
+            parse_mode="HTML",
+            disable_web_page_preview=True,
+        )
     except TelegramForbiddenError as e:
         append_event(
             event="confirm_fail",
@@ -341,10 +383,7 @@ async def cb_confirm(query: CallbackQuery, state: FSMContext) -> None:
             error=repr(e),
         )
         await state.clear()
-        await query.message.answer(
-            "❌ Партнёр недоступен для сообщений.",
-            parse_mode=None,
-        )
+        await query.message.answer("❌ Партнёр недоступен для сообщений.", parse_mode=None)
         await query.answer()
         return
     except TelegramBadRequest as e:
@@ -360,10 +399,7 @@ async def cb_confirm(query: CallbackQuery, state: FSMContext) -> None:
             error=repr(e),
         )
         await state.clear()
-        await query.message.answer(
-            "❌ Не удалось доставить запрос партнёру.",
-            parse_mode=None,
-        )
+        await query.message.answer("❌ Не удалось доставить запрос партнёру.", parse_mode=None)
         await query.answer()
         return
     except Exception as e:
@@ -379,10 +415,7 @@ async def cb_confirm(query: CallbackQuery, state: FSMContext) -> None:
             error=repr(e),
         )
         await state.clear()
-        await query.message.answer(
-            "❌ Не удалось доставить запрос партнёру.",
-            parse_mode=None,
-        )
+        await query.message.answer("❌ Не удалось доставить запрос партнёру.", parse_mode=None)
         await query.answer()
         return
 
