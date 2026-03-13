@@ -35,9 +35,9 @@ from aiogram.types import BotCommand, BotCommandScopeDefault
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from zoneinfo import ZoneInfo
+from bot.handlers.city_today import router as city_today_router
 
-from bot.city_events.update import update_events_today
-from bot.handlers.city_events import router as city_events_router
+
 from bot.handlers.bizbot import router as bizbot_router
 from bot.handlers.partner_apply import router as partner_apply_router
 
@@ -115,7 +115,7 @@ async def main() -> None:
     dp.include_router(admin_status_router)
     dp.include_router(admin_funnel_router)
     dp.include_router(admin_help_router)
-    dp.include_router(city_events_router)
+    dp.include_router(city_today_router)
     dp.include_router(bizbot_router)
     dp.include_router(partner_apply_router)
     dp.include_router(fallback_router)  # строго последним
@@ -160,13 +160,11 @@ async def main() -> None:
     print("[WEBHOOK] deleted (drop_pending_updates=True)")
     scheduler = AsyncIOScheduler(timezone=ZoneInfo("Europe/Istanbul"))
 
-    # каждый день, 06:05 утра (пример). Время выберите любое “тихое”.
-    scheduler.add_job(update_events_today, CronTrigger(hour=6, minute=5))
+
 
     scheduler.start()
 
-    # сразу обновить при старте (без UI, просто заполнить файлы)
-    await update_events_today()
+
 
     # ✅ polling запускаем РОВНО 1 раз
     try:

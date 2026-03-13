@@ -35,7 +35,7 @@ BTN_TO_CATEGORY = {
     "📄 Официальный разбор требований для ВНЖ": "migration",
     "💇 Салон красоты": "beauty",
     "🍽 Кафе и рестораны": "cafe",
-    "💊 Аптеки": "pharmacy",
+
     "🚕 Такси": "taxi",
     "⚽ Спорт": "sport",
     "🎭 Досуг": "fun",
@@ -158,12 +158,29 @@ def _render_category_page(category_code: str, page: int, key: int) -> tuple[str,
 
     if total == 0:
         text = f"📦 Категория: {category_code}\nПока пусто."
+
+        b = InlineKeyboardBuilder()
+
+        # панель событий города
+        if category_code in ("gov", "pharmacy", "emergency"):
+            b.button(text="🌆 События города сегодня", callback_data="city_today")
+
+        # аптечные дежурства
         if category_code == "pharmacy":
-            return (text, _pharmacy_events_kb())
+            b.button(text="💊 Дежурные аптеки", callback_data=PHARM_TODAY_CB)
+
+        # отключения
         if category_code == "gov":
-            return (text, _gov_events_kb())
+            b.button(text="🔌 Плановые отключения воды и электричества", callback_data=OUTAGES_TODAY_CB)
+
+        # экстренные службы
         if category_code == "emergency":
-            return (text, _emergency_events_kb())
+            b.button(text="☎️ Экстренные контакты", callback_data=EMERGENCY_CONTACTS_CB)
+
+        if b.buttons:
+            b.adjust(1)
+            return (text, b.as_markup())
+
         return (text, None)
 
     pages = max(1, math.ceil(total / PER_PAGE))

@@ -21,11 +21,38 @@ START_IMAGE = PROJECT_ROOT / "assets" / "start.png"
 
 def build_main_menu_kb() -> InlineKeyboardMarkup:
     rows = []
-    for title, code in BTN_TO_CATEGORY.items():
-        rows.append([InlineKeyboardButton(text=title, callback_data=f"catopen:{code}")])
 
-    rows.append([InlineKeyboardButton(text="🤖 Бот для бизнеса", callback_data="bizbot:open")])
-    rows.append([InlineKeyboardButton(text="🤝 Стать партнёром AliMind", callback_data="partner:open")])
+    # 🌆 единый вход в события города
+    rows.append([
+        InlineKeyboardButton(
+            text="🌆 События города",
+            callback_data="city_today"
+        )
+    ])
+
+    # категории каталога
+    for title, code in BTN_TO_CATEGORY.items():
+        rows.append([
+            InlineKeyboardButton(
+                text=title,
+                callback_data=f"catopen:{code}"
+            )
+        ])
+
+    # сервисные кнопки
+    rows.append([
+        InlineKeyboardButton(
+            text="🤖 Бот для бизнеса",
+            callback_data="bizbot:open"
+        )
+    ])
+
+    rows.append([
+        InlineKeyboardButton(
+            text="🤝 Стать партнёром AliMind",
+            callback_data="partner:open"
+        )
+    ])
 
     return InlineKeyboardMarkup(inline_keyboard=rows)
 

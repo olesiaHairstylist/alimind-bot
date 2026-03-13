@@ -1,8 +1,35 @@
-[
-  {
-    "name": "Eylül Eczanesi",
-    "district": "Oba",
-    "address": "Oba Mah. 234 Sk. No:12",
-    "phone": "+90 242 XXX XX XX"
-  }
-]
+{
+  "updated_at": "2026-03-12T19:55:03.728396+03:00",
+  "items": [
+    {
+      "name": "FİLİZ ECZANESİ",
+      "district": "Alanya",
+      "address": "SARAY MH. KÜLTÜR CD. BASKENT HASTANESI ACIL YANI",
+      "phone": "0(242) 513-04-04"
+    },
+    {
+      "name": "BEYAZ ECZANESİ",
+      "district": "Alanya",
+      "address": "SUGÖZÜ MAH. 610 CAD.NO: 13/A ESME-KEMAL BEYAZ AİLE SAĞLIĞI MERKEZİ YANI",
+      "phone": "0(242) 515-44-44"
+    },
+    {
+      "name": "LALE ECZANESİ",
+      "district": "Alanya",
+      "address": "CİKCİLLİ MAH. AZAKOĞLU CAD. NO: 12/A CİKCİLLİ SAĞLIK OCAĞI YANI ALANYUM AVM ÜSTÜ MAHMUTLAR",
+      "phone": "0(242) 500-28-16"
+    },
+    {
+      "name": "HACETTEPE ECZANESİ",
+      "district": "Alanya",
+      "address": "MAHMUTLAR MAH. BARBAROS CAD. 152/A KONAKLI",
+      "phone": "0(242) 528-60-59"
+    },
+    {
+      "name": "MERCAN ECZANESİ",
+      "district": "Alanya",
+      "address": "İSTİKLAL CADDESİ HAL YOLU ÜZERİ DENİZBANK VE GARANTİ BANKASI KARŞISI KONAKLI/ALANYA",
+      "phone": "0(242) 565-32-85"
+    }
+  ]
+}
