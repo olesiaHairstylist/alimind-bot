@@ -22,15 +22,12 @@ router = Router()
 
 PER_PAGE = 5
 CB_PREFIX = "catpage"
-PHARM_TODAY_CB = "pharm_today"
-OUTAGES_TODAY_CB = "outages_today"
-EMERGENCY_CONTACTS_CB = "emergency_contacts"
+
 
 BTN_TO_CATEGORY = {
 
 
-    "🏛 Госучреждения": "gov",
-    "🚨 Экстренные службы": "emergency",
+
     "🗣 Услуги переводчика": "trn",
     "📄 Официальный разбор требований для ВНЖ": "migration",
     "💇 Салон красоты": "beauty",
@@ -133,24 +130,12 @@ def _objects_by_category(category_code: str) -> list[dict]:
     others.sort(key=lambda o: to_text(o.get("name")).strip().lower())
 
     return partners + others
-def _pharmacy_events_kb() -> InlineKeyboardMarkup:
-    b = InlineKeyboardBuilder()
-    b.button(text="💊 Дежурные аптеки", callback_data=PHARM_TODAY_CB)
-    b.adjust(1)
-    return b.as_markup()
-
-def _gov_events_kb() -> InlineKeyboardMarkup:
-    b = InlineKeyboardBuilder()
-    b.button(text="🔌 Плановые отключения воды и электричества", callback_data=OUTAGES_TODAY_CB)
-    b.adjust(1)
-    return b.as_markup()
 
 
-def _emergency_events_kb() -> InlineKeyboardMarkup:
-    b = InlineKeyboardBuilder()
-    b.button(text="☎️ Экстренные контакты", callback_data=EMERGENCY_CONTACTS_CB)
-    b.adjust(1)
-    return b.as_markup()
+
+
+
+
 
 def _render_category_page(category_code: str, page: int, key: int) -> tuple[str, Optional[InlineKeyboardMarkup]]:
     objs = _objects_by_category(category_code)
@@ -166,16 +151,11 @@ def _render_category_page(category_code: str, page: int, key: int) -> tuple[str,
             b.button(text="🌆 События города сегодня", callback_data="city_today")
 
         # аптечные дежурства
-        if category_code == "pharmacy":
-            b.button(text="💊 Дежурные аптеки", callback_data=PHARM_TODAY_CB)
 
-        # отключения
-        if category_code == "gov":
-            b.button(text="🔌 Плановые отключения воды и электричества", callback_data=OUTAGES_TODAY_CB)
 
-        # экстренные службы
-        if category_code == "emergency":
-            b.button(text="☎️ Экстренные контакты", callback_data=EMERGENCY_CONTACTS_CB)
+
+
+
 
         if b.buttons:
             b.adjust(1)
@@ -206,22 +186,14 @@ def _render_category_page(category_code: str, page: int, key: int) -> tuple[str,
             page_ids.append(obj_id)
 
     lines.append("")
-    lines.append(" Это список то что вас интересует. Нажмите👇 , чтобы открыть карточку")
+    lines.append("👇 Нажмите на название, чтобы открыть карточку.")
 
     b = InlineKeyboardBuilder()
 
 
 
-    # ✅ GOV: событийная кнопка всегда первой строкой
 
-    if category_code == "gov":
-        b.button(text="🔌 Плановые отключения воды и электричества", callback_data=OUTAGES_TODAY_CB)
-        b.adjust(1)
 
-    # ✅ PHARMACY: событийная кнопка всегда первой строкой (если уже делали)
-    if category_code == "pharmacy":
-        b.button(text="💊 Дежурные аптеки", callback_data=PHARM_TODAY_CB)
-        b.adjust(1)
 
     # Кнопки ID текущей страницы
     for obj_id in page_ids:
@@ -241,9 +213,8 @@ def _render_category_page(category_code: str, page: int, key: int) -> tuple[str,
             nav.append(InlineKeyboardButton(text="▶️", callback_data=f"{CB_PREFIX}:{category_code}:{key}:{page + 1}"))
     if nav:
         b.row(*nav)
-
-    kb = b.as_markup() if (page_ids or nav or category_code in ("emergency", "gov", "pharmacy")) else None
-
+    b.row(InlineKeyboardButton(text="⬅️ Назад в меню", callback_data="back_main_menu"))
+    kb = b.as_markup()
     return ("\n".join(lines), kb)
 # Старый текстовый вход оставляем как запасной (не ломаем логику)
 @router.message(F.text.in_(BTN_TEXTS))

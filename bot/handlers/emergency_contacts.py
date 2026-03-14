@@ -6,7 +6,12 @@ from typing import Any
 
 from aiogram import Router
 from aiogram.filters import Command
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import (
+    Message,
+    CallbackQuery,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+)
 
 router = Router()
 
@@ -23,6 +28,14 @@ PLAN_B_TEXT = (
 )
 
 CB = "emergency_contacts"
+
+
+def _back_to_menu_kb() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="⬅️ Назад в меню", callback_data="back_main_menu")]
+        ]
+    )
 
 
 def _safe_read_items() -> list[dict[str, str]]:
@@ -74,7 +87,11 @@ def _render(items: list[dict[str, str]]) -> str:
 @router.message(Command("emergency"))
 async def cmd_emergency(message: Message) -> None:
     items = _safe_read_items()
-    await message.answer(_render(items), parse_mode=None)
+    await message.answer(
+        _render(items),
+        parse_mode=None,
+        reply_markup=_back_to_menu_kb(),
+    )
 
 
 @router.callback_query(lambda c: c.data == CB)
@@ -84,6 +101,14 @@ async def cb_emergency(call: CallbackQuery) -> None:
 
     await call.answer()
     try:
-        await call.message.edit_text(text, parse_mode=None)
+        await call.message.edit_text(
+            text,
+            parse_mode=None,
+            reply_markup=_back_to_menu_kb(),
+        )
     except Exception:
-        await call.message.answer(text, parse_mode=None)
+        await call.message.answer(
+            text,
+            parse_mode=None,
+            reply_markup=_back_to_menu_kb(),
+        )

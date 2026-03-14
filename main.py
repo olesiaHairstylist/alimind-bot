@@ -38,8 +38,8 @@ from zoneinfo import ZoneInfo
 from bot.handlers.city_today import router as city_today_router
 
 
-from bot.handlers.bizbot import router as bizbot_router
-from bot.handlers.partner_apply import router as partner_apply_router
+
+
 
 
 
@@ -116,8 +116,8 @@ async def main() -> None:
     dp.include_router(admin_funnel_router)
     dp.include_router(admin_help_router)
     dp.include_router(city_today_router)
-    dp.include_router(bizbot_router)
-    dp.include_router(partner_apply_router)
+
+
     dp.include_router(fallback_router)  # строго последним
 
     # ===== BOOT + SMOKE =====

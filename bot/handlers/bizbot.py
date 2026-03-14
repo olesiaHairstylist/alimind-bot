@@ -15,7 +15,7 @@ from bot.keyboards.bizbot import (
     bizbot_confirm_kb,
     bizbot_done_kb,
 )
-from bot.handlers.start import _send_start
+
 load_dotenv()
 
 router = Router()
@@ -267,7 +267,7 @@ async def bizbot_confirm(callback: CallbackQuery, state: FSMContext) -> None:
 async def bizbot_to_menu(callback: CallbackQuery, state: FSMContext) -> None:
     await state.clear()
     if callback.message:
-        await _send_start(callback.message)
+
     await callback.answer()
 @router.callback_query(F.data == "bizlead:contact")
 async def bizlead_contact(query: CallbackQuery):
