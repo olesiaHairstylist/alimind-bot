@@ -231,7 +231,17 @@ async def category_button_handler(message: Message) -> None:
     sent = await message.answer(page_text, reply_markup=kb, parse_mode=None)
 
     _set_cat_ctx(user_id, code, key=key, msg_id=sent.message_id)
+def _card_actions_kb(user_id: int, obj_id: str) -> InlineKeyboardMarkup:
+    b = InlineKeyboardBuilder()
 
+    fav_kb = make_fav_toggle_kb(user_id, obj_id)
+
+    if fav_kb and fav_kb.inline_keyboard:
+        for row in fav_kb.inline_keyboard:
+            b.row(*row)
+
+    b.row(InlineKeyboardButton(text="⬅️ Назад в меню", callback_data="back_main_menu"))
+    return b.as_markup()
 
 # Новый вход из красивого inline-меню (/start)
 @router.callback_query(F.data.startswith("catopen:"))
