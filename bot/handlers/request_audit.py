@@ -96,3 +96,7 @@ async def cmd_audit_last(message: Message) -> None:
         )
 
     await message.answer("\n".join(lines), parse_mode=None)
+
+    @router.message(Command("chatid"))
+    async def cmd_chatid(message: Message) -> None:
+        await message.answer(str(message.chat.id), parse_mode=None)
